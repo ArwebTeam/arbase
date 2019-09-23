@@ -112,6 +112,15 @@ It allows you to generate APIs from a simple JSON format
           "*", // again everyone can reply to it
           "#~blacklisted" // except blacklisted users
         ]
+      },
+      "topics": { // and it can contain sub-topics
+        "type": "topic[]",
+        "append": [ // ..which only moderators can add
+          "$~moderators"
+        ],
+        "delete": [
+          "$~moderators" // ...and only moderator can remove
+        ]
       }
     },
     "acl": { // access control lists. this is where the permission magic happens
@@ -121,11 +130,12 @@ It allows you to generate APIs from a simple JSON format
         ],
         "fixed": [ // permanently it contains the sub-topic moderators
           "#~moderators"
+          // TODO: possibly add "$~blacklisted" ?
         ],
         "append": [ // anyone can append who's already a moderator
           "$~moderators"
         ],
-        "delete": [ // same goes for deleting
+        "delete": [ // same goes for deleting (you can de-mod yourself for e.x.)
           "$~moderators"
         ]
       },
@@ -135,25 +145,63 @@ It allows you to generate APIs from a simple JSON format
         ]
       }
     }
-  }
+  },
+  "board": { // this is our board
+    "attributes": {
+      "name": { // every board has a name
+        "type": "string",
+        "maxSize": 1000,
+        "notNull": true,
+        "modify": [ // it can be modified by the moderators
+          "$~moderators"
+        ]
+      },
+      "description": { // and a short description
+        "type": "string",
+        "maxSize": 1000,
+        "notNull": true,
+        "modify": [ // it can be modified by the moderators as well
+          "$~moderators"
+        ]
+      },
+      "topics": { // and it can contain topics
+        "type": "topic[]",
+        "append": [ // ..which only moderators can add
+          "$~moderators"
+        ],
+        "delete": [
+          "$~moderators" // ...and only moderator can remove
+        ]
+      }
+      // basically like a topic, except it can't contain posts
+    }
+    "acl": { // here the acl are a little bit different
+      "moderators": {
+        "fixed": [ // the creator is an irremovable moderator
+          "$creator"
+        ],
+        "append": [
+          "$~moderators"
+        ]
+      },
+      "blacklisted": {
+        "fixed": [ // also the creator can never be blacklisted
+          "!$creator"
+        ],
+        "append": [
+          "$~moderators"
+        ]
+      }
+      // and the previous references are missing, since this is the main element
+    }
+  },
+  "$main": "board" // this tells the crud api that "board" is the base element. as such it's not allowed to contain any "#" references
 }
+// also noticed how we're not using any time elements? the time is always available via $.createdOn or $.updatedOn, since we're using a blockchain beneath
+// sidenote: ## is "previous of previous" in the tree
 ```
 
-What we want
+# Good to know
 
-- A arweb site
-- That's a board
-- With topics
-  - That can have subtopics
-  - And posts
-
-- Every site
-  - Has a superadministrator (an address) which is an address that can modify certain ACLs that list an owner
-
-Would create a layout that looks like this
-
-```
-Board {
-  Topic[] topics
-}
-```
+- The `$.creator` permission might be dangerous
+  - It is valid _even when a blacklist entry applies in specific conditions_. Therefore it's better to not add it when using anyone (`*`), or make it the initial content of an acl, so it can be revoked later when needed.

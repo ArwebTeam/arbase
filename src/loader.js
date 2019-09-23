@@ -25,7 +25,7 @@ const entrySchema = Joi.object({
 })
 
 const schema = Joi.object({
-  main: Joi.string().required(),
+  '@main': Joi.string().required(),
   '@imports': Joi.object().pattern(/./, Joi.string()) // TODO: validate path schema
 }).pattern(/./, entrySchema)
 

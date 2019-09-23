@@ -97,6 +97,8 @@ function validator (tree, current, ...parents) {
           throw new Error(`Invalid sub-type ${type} for namespace ${ns}`)
         }
 
+        validator(subNs, subType, current, ...parents)
+
         attr.modify = attr.modify.map(parseAcl)
         attr.modify.forEach(validateAcl)
 
@@ -118,6 +120,8 @@ function validator (tree, current, ...parents) {
         if (!subType) {
           throw new Error(`Invalid sub-type ${type} for namespace ${ns}`)
         }
+
+        validator(subNs, subType, current, ...parents)
 
         attr.append = attr.append.map(parseAcl)
         attr.append.forEach(validateAcl)

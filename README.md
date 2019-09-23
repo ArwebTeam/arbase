@@ -105,8 +105,19 @@ It allows you to generate APIs from a simple JSON format
         ]
       },
       "acl": { // access control lists. this is where the permission magic happens
-        "moderators": { // we have moderators
-
+        "moderators": { // we have a moderators list
+          "initial": [ // initially it contains the creator
+            "$creator"
+          ],
+          "fixed": [ // permanently it contains the sub-topic moderators
+            "#~moderators"
+          ],
+          "append": [ // anyone can append who's already a moderator
+            "$~moderators"
+          ],
+          "delete": [ // same goes for deleting
+            "$~moderators"
+          ]
         }
       }
     },

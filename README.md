@@ -170,3 +170,17 @@ It allows you to generate APIs from a simple JSON format
 
 - The `$.creator` permission might be dangerous
   - It is valid _even when a blacklist entry applies in specific conditions_. Therefore it's better to not add it when using anyone (`*`), or make it the initial content of an acl, so it can be revoked later when needed.
+
+# Todo
+
+## Now
+- Base object
+- OPLog
+- Lists
+- ACLs
+
+## Future
+
+- Rate-limiting
+- Native "file" field that links to an arweave file-block
+- @imports: Basically `"@imports": { "namespace": "npm:some-cool-scheme/db.json", "namespace-2": "fs:./other-thing.json" }`, so that we can do for ex `namespace:thing[]` or `namespace:thing`

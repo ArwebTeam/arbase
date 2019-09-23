@@ -51,8 +51,9 @@ It allows you to generate APIs from a simple JSON format
         "type": "string", // ...which is a string
         "maxSize": 1000, // ...that's limited to 1k characters
         "notNull": true, // ...and can't be empty
-        "modify": [ // it can only be modified by the creator (TODO: or mods with edit permissions)
-          "$.creator" // we use $ to reference the current object
+        "modify": [ // it can only be modified by the creator and the moderators
+          "$.creator", // we use $ to reference the current object. in this case the creator of it
+          "$~moderators" // and the moderators of this post
         ]
       },
       "content": { // every post also has content, which has basically the same rules
@@ -60,7 +61,8 @@ It allows you to generate APIs from a simple JSON format
         "maxSize": 10000, // ...except it's 10k chars long
         "notNull": true,
         "modify": [
-          "$.creator"
+          "$.creator",
+          "$~moderators"
         ]
       },
       "replies": { // then we have the replies
@@ -68,14 +70,21 @@ It allows you to generate APIs from a simple JSON format
         // this list doesn't have a maxSize, since they can be grown infinetly without too much impact (TODO: really good idea?), but technically it can be set
         // notNull is also not set, since posts usually are created without replies
         "append": [ // this says who can reply
-          "$creator", // we can reply to our own stuff of course
+          "$.creator", // we can reply to our own stuff of course
           "*", // anyone else can as well (wildcard = "anyone")
           "!#~blacklisted", // but blacklisted users can't (this basically translated to "NOT (!) previous element (#) access control (~) blacklisted")
         ],
         "delete": [ // this says who can delete replies
-          "$$creator", // users can remove their own replies ($$ references the object in the list)
+          "$$.creator", // users can remove their own replies ($$ references the object in the list)
           "#"
         ]
+      },
+      "acl": { // we'll get to that later
+        "moderators": { // for now just know: it allows moderators of the topic to moderate this post
+          "fixed": [
+            "#~moderators"
+          ]
+        }
       }
     }
   },
@@ -103,28 +112,28 @@ It allows you to generate APIs from a simple JSON format
           "*", // again everyone can reply to it
           "#~blacklisted" // except blacklisted users
         ]
-      },
-      "acl": { // access control lists. this is where the permission magic happens
-        "moderators": { // we have a moderators list
-          "initial": [ // initially it contains the creator
-            "$creator"
-          ],
-          "fixed": [ // permanently it contains the sub-topic moderators
-            "#~moderators"
-          ],
-          "append": [ // anyone can append who's already a moderator
-            "$~moderators"
-          ],
-          "delete": [ // same goes for deleting
-            "$~moderators"
-          ]
-        }
       }
     },
-    "acl": {
-      "blacklisted": [
-        "#~blacklisted" // include users that are blacklisted in the previous element
-      ]
+    "acl": { // access control lists. this is where the permission magic happens
+      "moderators": { // we have a moderators list
+        "initial": [ // initially it contains the creator
+          "$creator"
+        ],
+        "fixed": [ // permanently it contains the sub-topic moderators
+          "#~moderators"
+        ],
+        "append": [ // anyone can append who's already a moderator
+          "$~moderators"
+        ],
+        "delete": [ // same goes for deleting
+          "$~moderators"
+        ]
+      },
+      "blacklisted": { // the blacklisted users list
+        "fixed": [
+          "#~blacklisted" // include users that are blacklisted in the previous element
+        ]
+      }
     }
   }
 }

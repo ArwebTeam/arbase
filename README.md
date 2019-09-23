@@ -8,41 +8,6 @@ It allows you to generate APIs from a simple JSON format
 
 # Example
 
-```json
-{
-  "post": {
-    "type": "object",
-  },
-  "topic": {
-    "type": "recursive-object",
-    "attributes": {
-      "title": {
-        "type": "string"
-      }
-    },
-    "modification": {
-      "title": [
-        ""
-      ]
-    },
-    "acl": {
-      "moderators": {
-        "initial": [""]
-      }
-    }
-  },
-  "board": {
-    "type": "list",
-    "contents": "topic",
-    "access": {
-      "insert": {
-
-      }
-    }
-  }
-}
-```
-
 ```js
 {
   "post": { // let's first create a post

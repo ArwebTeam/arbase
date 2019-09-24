@@ -184,3 +184,10 @@ It allows you to generate APIs from a simple JSON format
 - Rate-limiting
 - Native "file" field that links to an arweave file-block
 - @imports: Basically `"@imports": { "namespace": "npm:some-cool-scheme/db.json", "namespace-2": "fs:./other-thing.json" }`, so that we can do for ex `namespace:thing[]` or `namespace:thing`
+
+# Backwards compatibility
+
+- The removal of an attribute causes it to simply be ignored on verification, so attributes can be safely deleted
+- The change of an ACL initial/fixed set could invalidate entries if not done carefully
+- Same goes for the removal of a complete ACL
+- The addition of an ACL usually doesn't change anything

@@ -1,0 +1,24 @@
+{
+  "name": "aragon",
+  "version": "0.0.1",
+  "description": "Aragon is a tool to create object-based APIs on top of arweave in mere minutes",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mkg20001/arcrud.git"
+  },
+  "keywords": [
+    "aragon",
+    "arweave",
+    "arql"
+  ],
+  "author": "Maciej Krüger <mkg20001@gmail.com>",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/mkg20001/arcrud/issues"
+  },
+  "homepage": "https://github.com/mkg20001/arcrud#readme"
+}

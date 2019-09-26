@@ -2,7 +2,7 @@
 
 const {parse: parseAcl} = require('./acl')
 
-const aclFields = ['fixed', 'initial', 'append', 'remove']
+const aclFields = ['fixed', 'initial', 'append', 'delete']
 
 const nativeTypes = ['file', 'string', 'number']
 
@@ -40,7 +40,7 @@ function validator (tree, current, ...parents) {
         if (nativeTypes.indexOf(type) !== -1) {
           // we have a native type, all clear
         } else {
-          subType = current[type]
+          subType = current.attributes[type]
 
           if (!subType) {
             throw new TypeError('Invalid or missing type ' + type)
@@ -68,7 +68,7 @@ function validator (tree, current, ...parents) {
         if (nativeTypes.indexOf(type) !== -1) {
           // we have a native type, all clear
         } else {
-          subType = current[type]
+          subType = current.attributes[type]
 
           if (!subType) {
             throw new TypeError('Invalid or missing type ' + type)

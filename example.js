@@ -34,13 +34,13 @@ module.exports = {
           '$$.creator', // users can remove their own replies ($$ references the object in the list)
           '#'
         ]
-      },
-      acl: { // we'll get to that later
-        moderators: { // for now just know: it allows moderators of the topic to moderate this post
-          fixed: [
-            '#~moderators'
-          ]
-        }
+      }
+    },
+    acl: { // we'll get to that later
+      moderators: { // for now just know: it allows moderators of the topic to moderate this post
+        fixed: [
+          '#~moderators'
+        ]
       }
     }
   },
@@ -82,7 +82,7 @@ module.exports = {
     acl: { // access control lists. this is where the permission magic happens
       moderators: { // we have a moderators list
         initial: [ // initially it contains the creator
-          '$creator'
+          '$.creator'
         ],
         fixed: [ // permanently it contains the sub-topic moderators
           '#~moderators'
@@ -134,7 +134,7 @@ module.exports = {
     acl: { // here the acl are a little bit different
       moderators: {
         fixed: [ // the creator is an irremovable moderator
-          '$creator'
+          '$.creator'
         ],
         append: [
           '$~moderators'
@@ -142,7 +142,7 @@ module.exports = {
       },
       blacklisted: {
         fixed: [ // also the creator can never be blacklisted
-          '!$creator'
+          '!$.creator'
         ],
         append: [
           '$~moderators'

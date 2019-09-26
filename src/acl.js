@@ -11,7 +11,7 @@ module.exports = {
     let depth = 0
 
     function unexpectedCharacter (expected) {
-      throw new SyntaxError(`Unexpected character ${str[i]} at ${i}, expected ${expected}`)
+      throw new SyntaxError(`Unexpected character ${str[i]} at ${i}, expected ${expected} (full ${JSON.stringify(str)})`)
     }
 
     while (str.length > i) {
@@ -20,6 +20,16 @@ module.exports = {
       switch (curBlock) {
         case 'type': {
           switch (true) {
+            case cur === '!': {
+              out.not = true
+              i++
+              break
+            }
+            case cur === '*': {
+              out.wildcard = true
+              i++
+              break
+            }
             case cur === '#': {
               curBlock = 'prev'
               break
@@ -29,7 +39,7 @@ module.exports = {
               break
             }
             default: {
-              unexpectedCharacter('$ or #')
+              unexpectedCharacter('!, *, $ or #')
             }
           }
 
@@ -51,7 +61,7 @@ module.exports = {
           break
         }
         case 'next': {
-          if (cur === '#') {
+          if (cur === '$') {
             depth++
             i++
           } else if (cur === '.' || cur === '~') {
@@ -60,7 +70,7 @@ module.exports = {
 
             curBlock = 'access'
           } else {
-            unexpectedCharacter('#, . or ~')
+            unexpectedCharacter('$, . or ~')
           }
 
           break
@@ -106,6 +116,6 @@ module.exports = {
 
     // TODO: validate
 
-    return modeMap[out.mode].repeat(out.depth) + accessMap[out.type] + out.name
+    return out.wildcard ? '*' : (out.not ? '!' : '') + modeMap[out.mode].repeat(out.depth) + accessMap[out.type] + out.name
   }
 }

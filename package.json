@@ -7,7 +7,8 @@
     "aragon": "./src/bin.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "example": "aragon node:$PWD/example.js"
   },
   "repository": {
     "type": "git",

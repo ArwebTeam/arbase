@@ -1,30 +1,30 @@
 {
-  "name": "aragon",
+  "name": "arbase",
   "version": "0.0.1",
-  "description": "Aragon is a tool to create object-based APIs on top of arweave in mere minutes",
+  "description": "Arbase is a tool to create object-based APIs on top of arweave in mere minutes",
   "main": "src/index.js",
   "bin": {
-    "aragon": "./src/bin.js"
+    "arbase": "./src/bin.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "example": "aragon node:$PWD/example.js"
+    "example": "arbase node:$PWD/example.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mkg20001/arcrud.git"
+    "url": "git+https://github.com/mkg20001/arbase.git"
   },
   "keywords": [
-    "aragon",
+    "arbase",
     "arweave",
     "arql"
   ],
   "author": "Maciej Krüger <mkg20001@gmail.com>",
   "license": "MPL-2.0",
   "bugs": {
-    "url": "https://github.com/mkg20001/arcrud/issues"
+    "url": "https://github.com/mkg20001/arbase/issues"
   },
-  "homepage": "https://github.com/mkg20001/arcrud#readme",
+  "homepage": "https://github.com/mkg20001/arbase#readme",
   "dependencies": {
     "@hapi/joi": "^16.1.4"
   }

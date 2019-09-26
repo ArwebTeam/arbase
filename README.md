@@ -1,6 +1,6 @@
-# aragon
+# arbase
 
-Aragon is a tool to create object-based APIs on top of arweave in mere minutes
+Arbase is a tool to create object-based APIs on top of arweave in mere minutes
 
 # What does it do?
 

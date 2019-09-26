@@ -8,9 +8,13 @@ function compiler (tree, current, ...parents) {
 
   let out = []
 
+  console.log(current)
+
   for (const entry in tree) {
     if (!entry.startsWith('@')) {
       out.push(compileSchema())
     }
   }
 }
+
+module.exports = compiler

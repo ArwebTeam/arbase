@@ -109,6 +109,8 @@ module.exports = {
         }
       }
     }
+
+    return out
   },
   stringify: (out) => {
     const modeMap = {prev: '#', next: '$'}

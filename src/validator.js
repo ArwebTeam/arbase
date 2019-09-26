@@ -13,6 +13,12 @@ function validator (tree, current, ...parents) {
     current = tree[main]
   }
 
+  if (current.tree) {
+    return // already validated
+  }
+
+  current.tree = tree
+
   function validateAcl (parsedAcl, subType) {
     // TODO: use parents here to validate acl
     // subType is only set for list item delete
@@ -40,13 +46,11 @@ function validator (tree, current, ...parents) {
         if (nativeTypes.indexOf(type) !== -1) {
           // we have a native type, all clear
         } else {
-          subType = current.attributes[type]
+          subType = tree[type]
 
           if (!subType) {
             throw new TypeError('Invalid or missing type ' + type)
           }
-
-          validator(tree, subType, current, ...parents)
         }
 
         attr.isList = true
@@ -58,6 +62,10 @@ function validator (tree, current, ...parents) {
         attr.modify = attr.modify.map(parseAcl)
         attr.modify.forEach(validateAcl)
 
+        if (tree[type]) {
+          validator(tree, subType, current, ...parents)
+        }
+
         break
       }
 
@@ -68,13 +76,11 @@ function validator (tree, current, ...parents) {
         if (nativeTypes.indexOf(type) !== -1) {
           // we have a native type, all clear
         } else {
-          subType = current.attributes[type]
+          subType = tree[type]
 
           if (!subType) {
             throw new TypeError('Invalid or missing type ' + type)
           }
-
-          validator(tree, subType, current, ...parents)
         }
 
         attr.isList = false
@@ -88,6 +94,10 @@ function validator (tree, current, ...parents) {
 
         attr.delete = attr.delete.map(parseAcl)
         attr.delete.forEach((acl) => validateAcl(acl, subType))
+
+        if (tree[type]) {
+          validator(tree, subType, current, ...parents)
+        }
 
         break
       }
@@ -110,8 +120,6 @@ function validator (tree, current, ...parents) {
           throw new Error(`Invalid sub-type ${type} for namespace ${ns}`)
         }
 
-        validator(subNs, subType, current, ...parents)
-
         attr.isList = false
         attr.typeName = type
         attr.typeNs = ns
@@ -120,6 +128,8 @@ function validator (tree, current, ...parents) {
 
         attr.modify = attr.modify.map(parseAcl)
         attr.modify.forEach(validateAcl)
+
+        validator(subNs, subType, current, ...parents)
 
         break
       }
@@ -140,8 +150,6 @@ function validator (tree, current, ...parents) {
           throw new Error(`Invalid sub-type ${type} for namespace ${ns}`)
         }
 
-        validator(subNs, subType, current, ...parents)
-
         attr.isList = true
         attr.typeName = type
         attr.typeNs = ns
@@ -153,6 +161,8 @@ function validator (tree, current, ...parents) {
 
         attr.delete = attr.delete.map(parseAcl)
         attr.delete.forEach((acl) => validateAcl(acl, subType))
+
+        validator(subNs, subType, current, ...parents)
 
         break
       }

@@ -33,7 +33,7 @@ const loadType = { // TODO: "steal" from parcel?
   fs: async (path) => {
     return JSON.parse(String(fs.readFileSync(path))) // todo: rel path?
   },
-  npm: async (path) => {
+  node: async (path) => {
     return require(path)
   }
 }

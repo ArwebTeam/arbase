@@ -1,0 +1,4 @@
+---
+extends: /usr/lib/node_modules/eslint-config-aegir/index.js
+env:
+  serviceworker: true

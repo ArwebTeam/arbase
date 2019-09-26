@@ -2,7 +2,10 @@
   "name": "aragon",
   "version": "0.0.1",
   "description": "Aragon is a tool to create object-based APIs on top of arweave in mere minutes",
-  "main": "index.js",
+  "main": "src/index.js",
+  "bin": {
+    "aragon": "./src/bin.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -20,5 +23,8 @@
   "bugs": {
     "url": "https://github.com/mkg20001/arcrud/issues"
   },
-  "homepage": "https://github.com/mkg20001/arcrud#readme"
+  "homepage": "https://github.com/mkg20001/arcrud#readme",
+  "dependencies": {
+    "@hapi/joi": "^16.1.4"
+  }
 }

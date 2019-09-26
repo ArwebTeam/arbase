@@ -35,11 +35,12 @@ function validator (tree, current, ...parents) {
     switch (true) {
       case Boolean((match = attr.type.match(/^([a-z0-9]+)\[\]$/i))): { // list
         let type = match[1]
+        let subType
 
         if (nativeTypes.indexOf(type) !== -1) {
           // we have a native type, all clear
         } else {
-          let subType = current[type]
+          subType = current[type]
 
           if (!subType) {
             throw new TypeError('Invalid or missing type ' + type)
@@ -47,6 +48,12 @@ function validator (tree, current, ...parents) {
 
           validator(tree, subType, current, ...parents)
         }
+
+        attr.isList = true
+        attr.typeName = type
+        attr.typeNs = null
+        attr.typeObj = subType
+        attr.typeTree = tree
 
         attr.modify = attr.modify.map(parseAcl)
         attr.modify.forEach(validateAcl)
@@ -69,6 +76,12 @@ function validator (tree, current, ...parents) {
 
           validator(tree, subType, current, ...parents)
         }
+
+        attr.isList = false
+        attr.typeName = type
+        attr.typeNs = null
+        attr.typeObj = subType
+        attr.typeTree = tree
 
         attr.append = attr.append.map(parseAcl)
         attr.append.forEach(validateAcl)
@@ -99,6 +112,12 @@ function validator (tree, current, ...parents) {
 
         validator(subNs, subType, current, ...parents)
 
+        attr.isList = false
+        attr.typeName = type
+        attr.typeNs = ns
+        attr.typeObj = subType
+        attr.typeTree = subNs
+
         attr.modify = attr.modify.map(parseAcl)
         attr.modify.forEach(validateAcl)
 
@@ -122,6 +141,12 @@ function validator (tree, current, ...parents) {
         }
 
         validator(subNs, subType, current, ...parents)
+
+        attr.isList = true
+        attr.typeName = type
+        attr.typeNs = ns
+        attr.typeObj = subType
+        attr.typeTree = subNs
 
         attr.append = attr.append.map(parseAcl)
         attr.append.forEach(validateAcl)

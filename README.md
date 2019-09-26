@@ -1,6 +1,6 @@
-# arcrud
+# aragon
 
-Arcrud is a tool to create CRUD-based APIs on top of arweave in mere minutes
+Aragon is a tool to create object-based APIs on top of arweave in mere minutes
 
 # What does it do?
 
@@ -188,6 +188,7 @@ It allows you to generate APIs from a simple JSON format
 # Backwards compatibility
 
 - The removal of an attribute causes it to simply be ignored on verification, so attributes can be safely deleted
+  - Note that all elements that do not contain at least one valid attribute are ignored. But this shouldn't be an issue since they are obsoleted in that case, except if the creation is followed by edits that do introduce valid elements)
 - The change of an ACL initial/fixed set could invalidate entries if not done carefully
 - Same goes for the removal of a complete ACL
 - The addition of an ACL usually doesn't change anything

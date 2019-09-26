@@ -160,7 +160,7 @@ It allows you to generate APIs from a simple JSON format
       // and the previous references are missing, since this is the main element
     }
   },
-  "$main": "board" // this tells the crud api that "board" is the base element. as such it's not allowed to contain any "#" references
+  "@main": "board" // this tells the crud api that "board" is the base element. as such it's not allowed to contain any "#" references
 }
 // also noticed how we're not using any time elements? the time is always available via $.createdOn or $.updatedOn, since we're using a blockchain beneath
 // sidenote: ## is "previous of previous" in the tree
@@ -174,16 +174,17 @@ It allows you to generate APIs from a simple JSON format
 # Todo
 
 ## Now
-- Base object
-- OPLog
-- Lists
-- ACLs
+- [ ] Base object
+- [ ] ARQL fetch
+- [ ] OPLog
+- [ ] Lists
+- [x] @imports: Basically `"@imports": { "namespace": "npm:some-cool-scheme/db.json", "namespace-2": "fs:./other-thing.json" }`, so that we can do for ex `namespace:thing[]` or `namespace:thing`
 
 ## Future
 
+- ACLs
 - Rate-limiting
 - Native "file" field that links to an arweave file-block
-- @imports: Basically `"@imports": { "namespace": "npm:some-cool-scheme/db.json", "namespace-2": "fs:./other-thing.json" }`, so that we can do for ex `namespace:thing[]` or `namespace:thing`
 
 # Backwards compatibility
 

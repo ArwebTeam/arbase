@@ -4,7 +4,7 @@ const {parse: parseAcl} = require('./acl')
 
 const aclFields = ['fixed', 'initial', 'append', 'delete']
 
-const nativeTypes = ['file', 'string', 'number']
+const nativeTypes = require('./types')
 
 function validator (tree, current, ...parents) {
   if (!current) {
@@ -43,7 +43,7 @@ function validator (tree, current, ...parents) {
         let type = match[1]
         let subType
 
-        if (nativeTypes.indexOf(type) !== -1) {
+        if ((subType = nativeTypes[type])) {
           // we have a native type, all clear
         } else {
           subType = tree[type]
@@ -73,7 +73,7 @@ function validator (tree, current, ...parents) {
         let type = match[1]
         let subType
 
-        if (nativeTypes.indexOf(type) !== -1) {
+        if ((subType = nativeTypes[type])) {
           // we have a native type, all clear
         } else {
           subType = tree[type]

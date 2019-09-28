@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = {
-  validate: async () => {
-
+  compileBaseSchemaValidator: () => {
+    return `Joi.string()` // TODO: add something about format so it's a valid blockId
   }
 }

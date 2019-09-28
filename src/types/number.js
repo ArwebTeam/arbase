@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = {
-  validate: async () => {
-
+  compileBaseSchemaValidator: () => {
+    return `Joi.number()` // TODO: min max?
   }
 }

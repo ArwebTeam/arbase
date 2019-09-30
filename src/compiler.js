@@ -60,6 +60,8 @@ function compiler (config, tree, current, ...parents) {
       out.push(compileSchema(tree, tree[entry]))
     }
   }
+
+  return out
 }
 
 module.exports = compiler

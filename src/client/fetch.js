@@ -78,6 +78,20 @@ function joinListOplog (data, idMap, tx) {
   target is a blockId
 
   */
+
+  switch (data.op) {
+    case 'append': {
+      idMap[data.target] = data.push(data.target)
+      break
+    }
+    case 'delete': {
+      delete data[idMap[data.target]]
+      break
+    }
+    default: {
+      throw new TypeError(data.op)
+    }
+  }
 }
 
 async function fetchList (entry, id, list, listEntry, arweave) {
@@ -100,5 +114,5 @@ async function fetchList (entry, id, list, listEntry, arweave) {
     }
   }
 
-  return data
+  return data.filter(Boolean)
 }

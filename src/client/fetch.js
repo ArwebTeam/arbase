@@ -116,3 +116,8 @@ async function fetchList (entry, id, list, listEntry, arweave) {
 
   return data.filter(Boolean)
 }
+
+module.exports = {
+  fetchList,
+  fetchEntry
+}

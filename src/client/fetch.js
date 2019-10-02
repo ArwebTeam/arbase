@@ -34,7 +34,7 @@ function joinOplog (state, delta) {
   return state
 }
 
-async function fetchEntry (entry, id, arweave) {
+async function fetchEntry (arweave, entry, id) {
   const create = await arweave.arql($arql('= id $1', id))
 
   const initial = validateEntry(entry, await fetchTransaction(create), true)
@@ -90,7 +90,7 @@ function joinListOplog (data, idMap, tx) {
   }
 }
 
-async function fetchList (entry, id, list, listEntry, arweave) {
+async function fetchList (arweave, entry, listEntry, id, list) {
   let data = []
   let idMap = {}
 

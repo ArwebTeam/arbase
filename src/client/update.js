@@ -8,6 +8,12 @@ async function createTx (data, arweave) {
 
 // TODO: do some verification before creating the TX
 
+async function entryCreate (arweave, entry, val) {
+  const tx = await createTx(val)
+
+  return tx
+}
+
 async function entryModify (arweave, entry, id, diff) {
   const tx = await createTx(diff)
   tx.addTag('block', id)
@@ -41,6 +47,7 @@ async function listRemove (arweave, entry, id, targetList, targetId) {
 }
 
 module.exports = {
+  entryCreate,
   entryModify,
   entryDelete,
   listAppend,

@@ -16,10 +16,6 @@ even is an id, uneven is a property name or "#" for "edits" (oplog)
 
 // TODO: generate joi schema from entry attributes data
 
-function fetchMany (arql, ...ids) {
-
-}
-
 function fetchTransaction (id) {
   // TODO: get json
 }

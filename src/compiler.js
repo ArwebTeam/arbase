@@ -47,21 +47,64 @@ function compiler (config, tree, current, ...parents) {
   }
 
   let out = []
+  let outMap = {}
 
-  function compileSchema (tree, entry) {
+  function compileSchema (tree, entry, name, ns) {
     const validator = compileBaseSchemaValidator(entry)
-    out.push({
-      validator
-    })
+
+    const attribute = {}
+    let attributes = []
+
+    for (const id in entry.attributes) { // eslint-disable-line guard-for-in
+      const attr = entry.attributes[id]
+
+      const obj = {
+        name: id,
+        type: {
+          name: attr.typeName,
+          ns: attr.typeNs,
+          native: attr.isNativeType
+        },
+        isList: attr.isList,
+        /* perm: {
+          append: attr.append,
+          delete: attr.delete,
+          modify: attr.modify
+        }, */
+        val: {
+          maxSize: attr.maxSize,
+          notNull: attr.notNull
+        }
+      }
+
+      attributes.push(obj)
+      attribute[id] = obj
+    }
+
+    const obj = {
+      name,
+      ns,
+      validator,
+      attribute,
+      attributes
+    }
+
+    if (!outMap[ns]) { outMap[ns] = {} }
+    outMap[ns][name] = obj
+
+    out.push(obj)
   }
 
-  for (const entry in tree) {
+  for (const entry in tree) { // TODO: better recursion
     if (!entry.startsWith('@')) {
-      out.push(compileSchema(tree, tree[entry]))
+      out.push(compileSchema(tree, tree[entry], entry, null))
     }
   }
 
-  return out
+  return {
+    entries: out,
+    entry: outMap
+  }
 }
 
 module.exports = compiler

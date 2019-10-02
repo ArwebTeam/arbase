@@ -6,7 +6,7 @@ async function createTx (data, arweave) {
   }, arweave.jwk)
 }
 
-// TODO: do some verification
+// TODO: do some verification before creating the TX
 
 async function entryModify (arweave, entry, id, diff) {
   const tx = await createTx(diff)

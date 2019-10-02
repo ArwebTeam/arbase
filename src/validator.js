@@ -44,6 +44,7 @@ function validator (tree, current, ...parents) {
         let subType
 
         if ((subType = nativeTypes[type])) {
+          attr.isNativeType = true
           // we have a native type, all clear
         } else {
           subType = tree[type]
@@ -74,6 +75,7 @@ function validator (tree, current, ...parents) {
         let subType
 
         if ((subType = nativeTypes[type])) {
+          attr.isNativeType = true
           // we have a native type, all clear
         } else {
           subType = tree[type]

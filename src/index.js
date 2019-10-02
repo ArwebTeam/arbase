@@ -4,8 +4,11 @@ const loader = require('./loader')
 const validator = require('./validator')
 const compiler = require('./compiler')
 
-module.exports = async (src) => {
+module.exports = async (src, process) => {
   const contents = await loader(src)
+  const processor = require(process + '/' + require(process + '/package.json').compile)
   validator(contents)
-  return compiler({}, contents)
+  const compiled = compiler({}, contents)
+  const processed = processor(compiled)
+  return processed
 }

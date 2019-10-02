@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "example": "arbase node:$PWD/example.js"
+    "example": "arbase node:$PWD/example.js arbase-crud"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,7 @@
   "homepage": "https://github.com/mkg20001/arbase#readme",
   "dependencies": {
     "@hapi/joi": "^16.1.4",
+    "arlang": "^0.1.3",
     "arweave": "^1.4.1"
   }
 }

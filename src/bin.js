@@ -3,7 +3,7 @@
 'use strict'
 
 const generate = require('.')
-generate(process.argv[2])
+generate(process.argv[2], process.argv[3])
   .then(out => {
     console.log(out)
   })

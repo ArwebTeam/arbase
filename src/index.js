@@ -9,6 +9,6 @@ module.exports = async (src, process) => {
   const processor = require(process + '/' + require(process + '/package.json').compile)
   validator(contents)
   const compiled = compiler({}, contents)
-  const processed = processor(compiled)
+  const processed = processor(compiled, require('./helper'))
   return processed
 }

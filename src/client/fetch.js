@@ -2,6 +2,7 @@
 
 const arlang = require('arlang')
 const $arql = arlang.short('sym')
+const Boom = require('@hapi/boom')
 
 const queue = require('../queue')()
 
@@ -16,8 +17,8 @@ even is an id, uneven is a property name or "#" for "edits" (oplog)
 
 // TODO: generate joi schema from entry attributes data
 
-function fetchTransaction (id) {
-  // TODO: get json
+function fetchTransaction (arweave, id) {
+  return arweave.transactions.get(id)
 }
 
 function validateEntry (entry, {data, tags}, isInitial) {
@@ -35,9 +36,22 @@ function joinOplog (state, delta) {
 }
 
 async function fetchEntry (arweave, entry, id) {
-  const create = await arweave.arql($arql('= id $1', id))
+  let initial
 
-  const initial = validateEntry(entry, await fetchTransaction(create), true)
+  try {
+    initial = validateEntry(entry, await fetchTransaction(arweave, id), true)
+  } catch (err) {
+    if (err.type === 'TX_NOT_FOUND') {
+      throw Boom.notFound('Block base transaction not found')
+    }
+
+    if (err.type === 'TX_INVALID') {
+      throw Boom.notFound('Supplied block base transaction ID invalid')
+    }
+
+    throw err
+  }
+
   let data = initial.data
 
   const txs = await arweave.arql($arql('& (= block $1) (= child "#")', id))

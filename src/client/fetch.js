@@ -54,7 +54,7 @@ async function fetchEntry (arweave, entry, id) {
 
   let data = initial.data
 
-  const txs = await arweave.arql($arql('& (= block $1) (= child "#")', id))
+  const {data: txs, live} = await arweave.arql($arql('& (= block $1) (= child "#")', id))
 
   queue.init(id, 3, 50)
 
@@ -70,7 +70,7 @@ async function fetchEntry (arweave, entry, id) {
     }
   }
 
-  return data
+  return {data, live}
 }
 
 function validateListEntry (entry, listEntry, {data, tags}) {
@@ -108,7 +108,7 @@ async function fetchList (arweave, entry, listEntry, id, list) {
   let data = []
   let idMap = {}
 
-  const txs = await arweave.arql($arql('& (= block $1) (= child $2)', id, list))
+  const {data: txs, live} = await arweave.arql($arql('& (= block $1) (= child $2)', id, list))
 
   queue.init(id, 3, 50)
 
@@ -124,7 +124,7 @@ async function fetchList (arweave, entry, listEntry, id, list) {
     }
   }
 
-  return data.filter(Boolean)
+  return {data: data.filter(Boolean), live}
 }
 
 module.exports = {

@@ -54,7 +54,17 @@ async function validateAndEncode (entry, data, half) {
   return entry.message.encode(value)
 }
 
+function decodeTxData (tx) {
+  return Buffer.from(tx.get('data', {decode: true}))
+}
+
+function encodeTxData (data) {
+  return new Uint8Array(data)
+}
+
 module.exports = {
   decodeAndValidate,
-  validateAndEncode
+  validateAndEncode,
+  decodeTxData,
+  encodeTxData
 }

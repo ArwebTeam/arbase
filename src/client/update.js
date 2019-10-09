@@ -1,10 +1,10 @@
 'use strict'
 
-const {validateAndEncode} = require('./process')
+const { validateAndEncode, encodeTxData } = require('./process')
 
 async function createTx (data, arweave) {
   return arweave.createTransaction({
-    data: new Uint8Array(data)
+    data: encodeTxData(data)
   }, arweave.jwk)
 }
 

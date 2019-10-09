@@ -4,7 +4,7 @@ const arlang = require('arlang')
 const $arql = arlang.short('sym')
 const Boom = require('@hapi/boom')
 
-const {decodeAndValidate} = require('./process')
+const { decodeAndValidate, decodeTxData } = require('./process')
 
 const queue = require('../queue')()
 
@@ -17,8 +17,8 @@ even is an id, uneven is a property name or "#" for "edits" (oplog)
 
 */
 
-function fetchTransaction (arweave, id) {
-  return arweave.transactions.get(id)
+async function fetchTransaction (arweave, id) {
+  return decodeTxData(await arweave.transactions.get(id))
 }
 
 function validateEntry (entry, {data, tags}, isInitial) {
@@ -95,7 +95,7 @@ module.exports = (arweave) => {
       let obj
 
       try {
-        obj = decodeAndValidate(entry, (await fetchTransaction(arweave, id)).data)
+        obj = decodeAndValidate(entry, await fetchTransaction(arweave, id))
       } catch (err) {
         if (err.type === 'TX_NOT_FOUND') {
           throw Boom.notFound('Block base transaction not found')
@@ -120,7 +120,7 @@ module.exports = (arweave) => {
       for (let i = txLog.length; i > -1; i--) {
         const tx = await txLog[i]
         if (tx) {
-          const {data} = await fetchTransaction(tx)
+          const data = await fetchTransaction(tx)
           obj = joinOplog(obj, decodeAndValidate(entry, data, true))
         }
       }

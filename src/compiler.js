@@ -63,7 +63,6 @@ function compiler (config, tree, current, ...parents) {
 
   function compileSchema (tree, entry, name, ns) {
     const validator = compileBaseSchemaValidator(entry)
-    const message = compileBaseSchemaMessage(name, entry.attributes)
 
     const attribute = {}
     let attributes = []
@@ -93,7 +92,14 @@ function compiler (config, tree, current, ...parents) {
       attribute[id] = attributes.push(obj) - 1
     }
 
+    const fullName = (ns ? ('@' + ns) : '') + name
+    const fullNameSafe = encodeURI(fullName).replace('%', 'a')
+
+    const message = compileBaseSchemaMessage(fullNameSafe, entry.attributes)
+
     const obj = {
+      fullName,
+      fullNameSafe,
       name,
       ns,
       validator,

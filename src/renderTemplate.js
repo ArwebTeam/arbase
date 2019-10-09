@@ -23,6 +23,8 @@ message ListEvent {
 
 `
 
+// TODO: use pre-compiled protobufjs
+
 data.entries.forEach(entry => {
   baseMessage += entry.message
 })
@@ -30,7 +32,7 @@ data.entries.forEach(entry => {
 data.messages = protons(baseMessage)
 
 data.entries.forEach(entry => {
-  entry.message = data.messages[entry.name]
+  entry.message = data.messages[entry.fullNameSafe]
 })
 
 module.exports = data

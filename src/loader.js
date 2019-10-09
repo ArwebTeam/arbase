@@ -13,6 +13,7 @@ const aclSchema = Joi.object({
 })
 
 const attributeSchema = Joi.object({ // TODO: make 2 validators, one for list one for normal attr
+  id: Joi.number().integer().required(),
   type: Joi.string().required(),
   maxSize: Joi.number().integer(),
   notNull: Joi.boolean().default(false),

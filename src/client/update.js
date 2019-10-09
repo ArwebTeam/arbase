@@ -9,13 +9,13 @@ async function createTx (data, arweave) {
 // TODO: do some verification before creating the TX
 
 async function entryCreate (arweave, entry, val) {
-  const tx = await createTx(val)
+  const tx = await createTx(val, arweave)
 
   return tx
 }
 
 async function entryModify (arweave, entry, id, diff) {
-  const tx = await createTx(diff)
+  const tx = await createTx(diff, arweave)
   tx.addTag('block', id)
   tx.addTag('child', '#')
 
@@ -23,7 +23,7 @@ async function entryModify (arweave, entry, id, diff) {
 }
 
 async function entryDelete (arweave, entry, id, diff) {
-  const tx = await createTx({$delete: true})
+  const tx = await createTx({$delete: true}, arweave)
   tx.addTag('block', id)
   tx.addTag('child', '#')
 
@@ -31,7 +31,7 @@ async function entryDelete (arweave, entry, id, diff) {
 }
 
 async function listAppend (arweave, entry, id, targetList, targetId) {
-  const tx = await createTx({ op: 'append', target: targetId })
+  const tx = await createTx({ op: 'append', target: targetId }, arweave)
   tx.addTag('block', id)
   tx.addTag('child', targetList)
 
@@ -39,7 +39,7 @@ async function listAppend (arweave, entry, id, targetList, targetId) {
 }
 
 async function listRemove (arweave, entry, id, targetList, targetId) {
-  const tx = await createTx({ op: 'delete', target: targetId })
+  const tx = await createTx({ op: 'delete', target: targetId }, arweave)
   tx.addTag('block', id)
   tx.addTag('child', targetList)
 

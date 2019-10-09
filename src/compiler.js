@@ -40,6 +40,18 @@ function compileBaseSchemaValidator (entry) { // TODO: fix recursion
   return `Joi.object(${functionObjectStringify(out)}).required()`
 }
 
+function compileBaseSchemaMessage (name, attrs) {
+  let out = [`message ${name} {`]
+
+  for (const attrId in attrs) { // eslint-disable-line guard-for-in
+    const attr = attrs[attrId]
+
+    if (!attr.isList) {
+      out.push(`${attr.typeObj.protobufSchemaType} ${attrId} = ${attr.id};`)
+    }
+  }
+}
+
 function compiler (config, tree, current, ...parents) {
   if (!current) {
     const {'@main': main} = tree
@@ -51,6 +63,7 @@ function compiler (config, tree, current, ...parents) {
 
   function compileSchema (tree, entry, name, ns) {
     const validator = compileBaseSchemaValidator(entry)
+    const message = compileBaseSchemaMessage(name, entry.attributes)
 
     const attribute = {}
     let attributes = []
@@ -77,33 +90,31 @@ function compiler (config, tree, current, ...parents) {
         }
       }
 
-      attributes.push(obj)
-      attribute[id] = obj
+      attribute[id] = attributes.push(obj) - 1
     }
 
     const obj = {
       name,
       ns,
       validator,
+      message,
       attribute,
       attributes
     }
 
     if (!outMap[ns]) { outMap[ns] = {} }
-    outMap[ns][name] = obj
-
-    out.push(obj)
+    outMap[ns][name] = out.push(obj) - 1
   }
 
   for (const entry in tree) { // TODO: better recursion
     if (!entry.startsWith('@')) {
-      out.push(compileSchema(tree, tree[entry], entry, null))
+      compileSchema(tree, tree[entry], entry, null)
     }
   }
 
   return {
-    entries: out,
-    entry: outMap
+    entry: out,
+    entries: outMap
   }
 }
 

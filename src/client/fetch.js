@@ -91,7 +91,7 @@ module.exports = (arweave) => {
 
       return {data: data.filter(Boolean), live}
     },
-    entry: async function fetchEntry (arweave, entry, id) {
+    entry: async function fetchEntry (entry, id) {
       let obj
 
       try {
@@ -103,6 +103,10 @@ module.exports = (arweave) => {
 
         if (err.type === 'TX_INVALID') {
           throw Boom.notFound('Supplied block base transaction ID invalid')
+        }
+
+        if (err.type === 'TX_PENDING') {
+          throw Boom.notFound('Transaction is still pending (TODO fetch from arswarm)')
         }
 
         throw err

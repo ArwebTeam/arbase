@@ -13,7 +13,7 @@ async function decodeAndValidate (entry, data, half) {
     const attr = entry.attribute[key]
 
     if (attr.decode) {
-      decoded[key] = await attr.decode()
+      decoded[key] = await attr.decode(decoded[key])
     }
 
     if (half) {
@@ -30,6 +30,31 @@ async function decodeAndValidate (entry, data, half) {
   return value
 }
 
+async function validateAndEncode (entry, data, half) {
+  const validator = half ? {} : entry.validator
+
+  for (const key in data) {
+    const attr = entry.attribute[key]
+
+    if (attr.encode) {
+      data[key] = await attr.encode(data[key])
+    }
+
+    if (half) {
+      validator[key] = attr.validator
+    }
+  }
+
+  const {error, value} = (half ? Joi.object(validator) : validator).validate(data)
+
+  if (error) {
+    throw error
+  }
+
+  return entry.message.encode(value)
+}
+
 module.exports = {
-  decodeAndValidate
+  decodeAndValidate,
+  validateAndEncode
 }

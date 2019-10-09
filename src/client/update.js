@@ -1,21 +1,23 @@
 'use strict'
 
+const {validateAndEncode} = require('./process')
+
 async function createTx (data, arweave) {
   return arweave.createTransaction({
-    data: Buffer.from(JSON.stringify(data))
+    data
   }, arweave.jwk)
 }
 
 // TODO: do some verification before creating the TX
 
 async function entryCreate (arweave, entry, val) {
-  const tx = await createTx(val, arweave)
+  const tx = await createTx(validateAndEncode(entry, val), arweave)
 
   return tx
 }
 
 async function entryModify (arweave, entry, id, diff) {
-  const tx = await createTx(diff, arweave)
+  const tx = await createTx(validateAndEncode(entry, diff, true), arweave)
   tx.addTag('block', id)
   tx.addTag('child', '#')
 
@@ -23,13 +25,14 @@ async function entryModify (arweave, entry, id, diff) {
 }
 
 async function entryDelete (arweave, entry, id, diff) {
-  const tx = await createTx({$delete: true}, arweave)
+  const tx = await createTx(/* TODO */ '', arweave)
   tx.addTag('block', id)
   tx.addTag('child', '#')
 
   return tx
 }
 
+// TODO: rewrite below
 async function listAppend (arweave, entry, id, targetList, targetId) {
   const tx = await createTx({ op: 'append', target: targetId }, arweave)
   tx.addTag('block', id)

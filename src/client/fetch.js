@@ -4,6 +4,8 @@ const arlang = require('arlang')
 const $arql = arlang.short('sym')
 const Boom = require('@hapi/boom')
 
+const {decodeAndValidate} = require('./process')
+
 const queue = require('../queue')()
 
 /*
@@ -14,8 +16,6 @@ const queue = require('../queue')()
 even is an id, uneven is a property name or "#" for "edits" (oplog)
 
 */
-
-// TODO: generate joi schema from entry attributes data
 
 function fetchTransaction (arweave, id) {
   return arweave.transactions.get(id)
@@ -33,44 +33,6 @@ function joinOplog (state, delta) {
   }
 
   return state
-}
-
-async function fetchEntry (arweave, entry, id) {
-  let initial
-
-  try {
-    initial = validateEntry(entry, await fetchTransaction(arweave, id), true)
-  } catch (err) {
-    if (err.type === 'TX_NOT_FOUND') {
-      throw Boom.notFound('Block base transaction not found')
-    }
-
-    if (err.type === 'TX_INVALID') {
-      throw Boom.notFound('Supplied block base transaction ID invalid')
-    }
-
-    throw err
-  }
-
-  let data = initial.data
-
-  const {data: txs, live} = await arweave.arql($arql('& (= block $1) (= child "#")', id))
-
-  queue.init(id, 3, 50)
-
-  const txLog = txs.reverse().map(() => queue(id, async () => {
-    const fetched = await fetchTransaction(id)
-    return validateEntry(entry, fetched, false)
-  }))
-
-  for (let i = txLog.length; i > -1; i--) {
-    const tx = await txLog[i]
-    if (tx) {
-      data = joinOplog(data, tx)
-    }
-  }
-
-  return {data, live}
 }
 
 function validateListEntry (entry, listEntry, {data, tags}) {
@@ -104,30 +66,66 @@ function joinListOplog (data, idMap, tx) {
   }
 }
 
-async function fetchList (arweave, entry, listEntry, id, list) {
-  let data = []
-  let idMap = {}
+module.exports = (arweave) => {
+  return {
+    list: async (entry, listEntry, id, list) => {
+      let data = []
+      let idMap = {}
 
-  const {data: txs, live} = await arweave.arql($arql('& (= block $1) (= child $2)', id, list))
+      const {data: txs, live} = await arweave.arql($arql('& (= block $1) (= child $2)', id, list))
 
-  queue.init(id, 3, 50)
+      // TODO: better queuing
+      queue.init(id, 3, 50)
 
-  const txLog = txs.reverse().map(() => queue(id, async () => {
-    const fetched = await fetchTransaction(id)
-    return validateListEntry(entry, listEntry, fetched)
-  }))
+      const txLog = txs.reverse().map(() => queue(id, async () => {
+        const fetched = await fetchTransaction(id)
+        return validateListEntry(entry, listEntry, fetched)
+      }))
 
-  for (let i = txLog.length; i > -1; i--) {
-    const tx = await txLog[i]
-    if (tx) {
-      data = joinListOplog(data, idMap, tx)
+      for (let i = txLog.length; i > -1; i--) {
+        const tx = await txLog[i]
+        if (tx) {
+          data = joinListOplog(data, idMap, tx)
+        }
+      }
+
+      return {data: data.filter(Boolean), live}
+    },
+    entry: async function fetchEntry (arweave, entry, id) {
+      let obj
+
+      try {
+        obj = decodeAndValidate(entry, (await fetchTransaction(arweave, id)).data)
+      } catch (err) {
+        if (err.type === 'TX_NOT_FOUND') {
+          throw Boom.notFound('Block base transaction not found')
+        }
+
+        if (err.type === 'TX_INVALID') {
+          throw Boom.notFound('Supplied block base transaction ID invalid')
+        }
+
+        throw err
+      }
+
+      const {data: txs, live} = await arweave.arql($arql('& (= block $1) (= child "#")', id))
+
+      queue.init(id, 3, 50)
+
+      const txLog = txs.reverse().map(() => queue(id, async () => {
+        const fetched = await fetchTransaction(id)
+        return validateEntry(entry, fetched, false)
+      }))
+
+      for (let i = txLog.length; i > -1; i--) {
+        const tx = await txLog[i]
+        if (tx) {
+          const {data} = await fetchTransaction(tx)
+          obj = joinOplog(obj, decodeAndValidate(entry, data, true))
+        }
+      }
+
+      return {data: obj, live}
     }
   }
-
-  return {data: data.filter(Boolean), live}
-}
-
-module.exports = {
-  fetchList,
-  fetchEntry
 }

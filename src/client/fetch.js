@@ -17,10 +17,6 @@ even is an id, uneven is a property name or "#" for "edits" (oplog)
 
 */
 
-async function fetchTransaction (arweave, id) {
-  return decodeTxData(await arweave.transactions.get(id))
-}
-
 function validateEntry (entry, {data, tags}, isInitial) {
   // TODO: return false if invalid
 
@@ -67,6 +63,10 @@ function joinListOplog (data, idMap, tx) {
 }
 
 module.exports = (arweave) => {
+  async function fetchTransaction (id) {
+    return decodeTxData(await arweave.transactions.get(id))
+  }
+
   return {
     list: async (entry, listEntry, id, list) => {
       let data = []
@@ -95,7 +95,7 @@ module.exports = (arweave) => {
       let obj
 
       try {
-        obj = decodeAndValidate(entry, await fetchTransaction(arweave, id))
+        obj = decodeAndValidate(entry, await fetchTransaction(id))
       } catch (err) {
         if (err.type === 'TX_NOT_FOUND') {
           throw Boom.notFound('Block base transaction not found')

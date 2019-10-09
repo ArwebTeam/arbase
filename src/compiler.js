@@ -113,8 +113,8 @@ function compiler (config, tree, current, ...parents) {
   }
 
   return {
-    entry: out,
-    entries: outMap
+    entry: outMap,
+    entries: out
   }
 }
 

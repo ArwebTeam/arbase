@@ -1,7 +1,7 @@
 'use strict'
 
 const mainTable = {
-  entry: (val) => strNoTable(val, (entry) => str(entry, entryTable))
+  entries: (val) => strArr(val, (entry) => str(entry, entryTable))
 }
 
 const entryTable = {
@@ -20,14 +20,10 @@ function str (data, table) {
   return out.join('')
 }
 
-function strNoTable (data, every) {
-  let keys = []
+function strArr (data, every) {
+  let elements = data.map((el) => `${every(el)}`)
 
-  for (const key in data) { // eslint-disable-line guard-for-in
-    keys.push(`${JSON.stringify(key)}:${every(data[key])}`)
-  }
-
-  let out = ['{', keys.join(','), '}']
+  let out = ['[', elements.join(','), ']']
 
   return out.join('')
 }
@@ -36,6 +32,6 @@ const fs = require('fs')
 const template = String(fs.readFileSync(require.resolve('./renderTemplate.js')))
 
 module.exports = (data) => {
-  const out = str(mainTable, mainTable)
-  template.replace("'$DATA'", out)
+  const out = str(data, mainTable)
+  return template.replace("'$DATA'", out)
 }

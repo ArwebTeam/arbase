@@ -5,7 +5,7 @@ const validator = require('./validator')
 const compiler = require('./compiler')
 const render = require('./render')
 
-module.exports = async (src, process) => {
+module.exports = async (src) => {
   const contents = await loader(src)
   validator(contents)
   const compiled = compiler({}, contents)

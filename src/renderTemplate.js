@@ -1,6 +1,6 @@
 'use strict'
 
-const proto = require('protobuf')
+const protons = require('protons') // TODO: use pre-compiled protobufjs
 const Joi = require('@hapi/joi')
 
 const connector = require('arbase/src/connector')
@@ -8,5 +8,29 @@ const connector = require('arbase/src/connector')
 const data = '$DATA'
 
 connector(data)
+
+let baseMessage = `
+
+enum ListEventType {
+  append = 1;
+  delete = 2;
+}
+
+message ListEvent {
+  ListEventType type = 1;
+  bytes blockId = 2;
+}
+
+`
+
+data.entries.forEach(entry => {
+  baseMessage += entry.message
+})
+
+data.messages = protons(baseMessage)
+
+data.entries.forEach(entry => {
+  entry.message = data.messages[entry.name]
+})
 
 module.exports = data

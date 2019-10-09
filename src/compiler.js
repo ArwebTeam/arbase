@@ -14,6 +14,8 @@ function functionObjectStringify (o) { // stringifies as object with strings tre
   return '{' + a.join(',') + '}'
 }
 
+// TODO: compact and fix to be fully recursivly flat
+
 function compileBaseSchemaValidator (entry) { // TODO: fix recursion
   let out = {}
 
@@ -38,6 +40,20 @@ function compileBaseSchemaValidator (entry) { // TODO: fix recursion
   }
 
   return `Joi.object(${functionObjectStringify(out)}).required()`
+}
+
+function compileSchemaAttr (attr) {
+  let out = attr.typeObj.compileBaseSchemaValidator()
+
+  if (attr.maxSize) {
+    out += `.length(${attr.maxSize})`
+  }
+
+  if (attr.notNull) {
+    out += '.required()'
+  }
+
+  return out
 }
 
 function compileBaseSchemaMessage (name, attrs) {
@@ -86,7 +102,8 @@ function compiler (config, tree, current, ...parents) {
         val: {
           maxSize: attr.maxSize,
           notNull: attr.notNull
-        }
+        },
+        validator: compileSchemaAttr(attr)
       }
 
       attribute[id] = attributes.push(obj) - 1

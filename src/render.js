@@ -5,6 +5,11 @@ const mainTable = {
 }
 
 const entryTable = {
+  validator: (v) => v,
+  attributes: (val) => strArr(val, (attribute) => str(attribute, attributeTable))
+}
+
+const attributeTable = {
   validator: (v) => v
 }
 

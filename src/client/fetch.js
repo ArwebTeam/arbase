@@ -95,7 +95,7 @@ module.exports = (arweave) => {
       let obj
 
       try {
-        obj = decodeAndValidate(entry, await fetchTransaction(id))
+        obj = await decodeAndValidate(entry, await fetchTransaction(id))
       } catch (err) {
         if (err.type === 'TX_NOT_FOUND') {
           throw Boom.notFound('Block base transaction not found')
@@ -125,7 +125,7 @@ module.exports = (arweave) => {
         const tx = await txLog[i]
         if (tx) {
           const data = await fetchTransaction(tx)
-          obj = joinOplog(obj, decodeAndValidate(entry, data, true))
+          obj = joinOplog(obj, await decodeAndValidate(entry, data, true))
         }
       }
 

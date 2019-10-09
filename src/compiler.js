@@ -43,6 +43,11 @@ function compileBaseSchemaValidator (entry) { // TODO: fix recursion
 }
 
 function compileSchemaAttr (attr) {
+  if (!attr.typeObj.compileBaseSchemaValidator) {
+    // later, when we fix recursion
+    return 'false'
+  }
+
   let out = attr.typeObj.compileBaseSchemaValidator()
 
   if (attr.maxSize) {
@@ -66,6 +71,10 @@ function compileBaseSchemaMessage (name, attrs) {
       out.push(`${attr.typeObj.protobufSchemaType} ${attrId} = ${attr.id};`)
     }
   }
+
+  out.push('}')
+
+  return out.join('')
 }
 
 function compiler (config, tree, current, ...parents) {

@@ -49,10 +49,17 @@ async function listRemove (arweave, entry, id, targetList, targetId) {
   return tx
 }
 
-module.exports = {
-  entryCreate,
-  entryModify,
-  entryDelete,
-  listAppend,
-  listRemove
+module.exports = (arweave) => {
+  const out = {
+    entryCreate,
+    entryModify,
+    entryDelete,
+    listAppend,
+    listRemove
+  }
+
+  for (const fnc in out) { // eslint-disable-line guard-for-in
+    const o = out[fnc]
+    out[fnc] = (...a) => o(arweave, ...a)
+  }
 }

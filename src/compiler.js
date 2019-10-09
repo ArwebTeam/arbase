@@ -27,7 +27,7 @@ function compileBaseSchemaValidator (entry) { // TODO: fix recursion
         out[attribute] = attr.typeObj.compileBaseSchemaValidator()
 
         if (attr.maxSize) {
-          out[attribute] += `.length(${attr.maxSize})`
+          out[attribute] += `.max(${attr.maxSize})`
         }
 
         if (attr.notNull) {
@@ -51,7 +51,8 @@ function compileSchemaAttr (attr) {
   let out = attr.typeObj.compileBaseSchemaValidator()
 
   if (attr.maxSize) {
-    out += `.length(${attr.maxSize})`
+    // TODO: rewrite props to be min, max instead
+    out += `.max(${attr.maxSize})`
   }
 
   if (attr.notNull) {

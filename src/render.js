@@ -13,6 +13,12 @@ const attributeTable = {
   validator: (v) => v
 }
 
+const signoffTable = {
+  return: 'return data',
+  eval: 'data',
+  cjs: 'module.exports = data'
+}
+
 function str (data, table) {
   let keys = []
 
@@ -36,7 +42,7 @@ function strArr (data, every) {
 const fs = require('fs')
 const template = String(fs.readFileSync(require.resolve('./renderTemplate.js')))
 
-module.exports = (data) => {
+module.exports = (data, {signoff}) => {
   const out = str(data, mainTable)
-  return template.replace("'$DATA'", out)
+  return template.replace("'$DATA'", out).replace('signoff', signoffTable[signoff || 'cjs'])
 }

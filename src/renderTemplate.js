@@ -35,4 +35,4 @@ data.entries.forEach(entry => {
   entry.message = data.messages[entry.fullNameSafe]
 })
 
-module.exports = data
+signoff

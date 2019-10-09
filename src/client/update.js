@@ -4,20 +4,20 @@ const {validateAndEncode} = require('./process')
 
 async function createTx (data, arweave) {
   return arweave.createTransaction({
-    data
+    data: new Uint8Array(data)
   }, arweave.jwk)
 }
 
 // TODO: do some verification before creating the TX
 
 async function entryCreate (arweave, entry, val) {
-  const tx = await createTx(validateAndEncode(entry, val), arweave)
+  const tx = await createTx(await validateAndEncode(entry, val), arweave)
 
   return tx
 }
 
 async function entryModify (arweave, entry, id, diff) {
-  const tx = await createTx(validateAndEncode(entry, diff, true), arweave)
+  const tx = await createTx(await validateAndEncode(entry, diff, true), arweave)
   tx.addTag('block', id)
   tx.addTag('child', '#')
 
@@ -62,4 +62,6 @@ module.exports = (arweave) => {
     const o = out[fnc]
     out[fnc] = (...a) => o(arweave, ...a)
   }
+
+  return out
 }

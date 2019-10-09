@@ -9,19 +9,7 @@ const data = '$DATA'
 
 connector(data)
 
-let baseMessage = `
-
-enum ListEventType {
-  append = 1;
-  delete = 2;
-}
-
-message ListEvent {
-  ListEventType type = 1;
-  bytes blockId = 2;
-}
-
-`
+let baseMessage = ''
 
 // TODO: use pre-compiled protobufjs
 

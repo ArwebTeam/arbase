@@ -33,18 +33,18 @@ async function entryDelete (arweave, entry, id, diff) {
 }
 
 // TODO: rewrite below
-async function listAppend (arweave, entry, id, targetList, targetId) {
+async function listAppend (arweave, entry, listEntry, id, targetId) {
   const tx = await createTx({ op: 'append', target: targetId }, arweave)
   tx.addTag('block', id)
-  tx.addTag('child', targetList)
+  tx.addTag('child', String(listEntry.id))
 
   return tx
 }
 
-async function listRemove (arweave, entry, id, targetList, targetId) {
+async function listRemove (arweave, entry, listEntry, id, targetId) {
   const tx = await createTx({ op: 'delete', target: targetId }, arweave)
   tx.addTag('block', id)
-  tx.addTag('child', targetList)
+  tx.addTag('child', String(listEntry.id))
 
   return tx
 }

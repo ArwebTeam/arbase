@@ -4,7 +4,7 @@ const arlang = require('arlang')
 const $arql = arlang.short('sym')
 const Boom = require('@hapi/boom')
 
-const { decodeAndValidate, decodeTxData } = require('./process')
+const { decodeAndValidate, decodeAndValidateList, ListEventType, decodeTxData } = require('./process')
 
 const queue = require('../queue')()
 
@@ -47,12 +47,12 @@ function joinListOplog (data, idMap, tx) {
 
   */
 
-  switch (data.op) {
-    case 'append': {
+  switch (data.type) {
+    case ListEventType.APPEND: {
       idMap[data.target] = data.push(data.target)
       break
     }
-    case 'delete': {
+    case ListEventType.DELETE: {
       delete data[idMap[data.target]]
       break
     }
@@ -77,10 +77,8 @@ module.exports = (arweave) => {
       // TODO: better queuing
       queue.init(id, 3, 50)
 
-      const txLog = txs.reverse().map(() => queue(id, async () => {
-        const fetched = await fetchTransaction(id)
-        return validateListEntry(entry, listEntry, fetched)
-      }))
+      const txLog = txs.reverse().map(() => queue(id, async () =>
+        decodeAndValidateList(await fetchTransaction(id))))
 
       for (let i = txLog.length; i > -1; i--) {
         const tx = await txLog[i]

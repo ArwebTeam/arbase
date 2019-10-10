@@ -67,12 +67,12 @@ module.exports = (arweave) => {
     return decodeTxData(await arweave.transactions.get(id))
   }
 
-  return {
-    list: async (entry, listEntry, id, list) => {
+  const f = {
+    list: async (entry, listEntry, id, parse) => {
       let data = []
       let idMap = {}
 
-      const {data: txs, live} = await arweave.arql($arql('& (= block $1) (= child $2)', id, list))
+      const {data: txs, live} = await arweave.arql($arql('& (= block $1) (= child $2)', id, String(listEntry.id)))
 
       // TODO: better queuing
       queue.init(id, 3, 50)
@@ -87,7 +87,21 @@ module.exports = (arweave) => {
         }
       }
 
-      return {data: data.filter(Boolean), live}
+      if (!parse) {
+        return {data: data.filter(Boolean), live}
+      }
+
+      const { offset, limit } = parse
+
+      // TODO: use id as cursor
+      const total = data.filter(Boolean).length
+      const range = data.filter(Boolean).reverse().slice(offset, offset + limit)
+
+      return {
+        data: range,
+        total,
+        live
+      }
     },
     entry: async function fetchEntry (entry, id) {
       let obj
@@ -130,4 +144,6 @@ module.exports = (arweave) => {
       return {data: obj, live}
     }
   }
+
+  return f
 }

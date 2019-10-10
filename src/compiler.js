@@ -97,6 +97,7 @@ function compiler (config, tree, current, ...parents) {
       const attr = entry.attributes[id]
 
       const obj = {
+        id: attr.id,
         name: id,
         type: {
           name: attr.typeName,

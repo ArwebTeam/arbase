@@ -1,6 +1,6 @@
 'use strict'
 
-const { validateAndEncode, encodeTxData } = require('./process')
+const { validateAndEncode, validateAndEncodeList, ListEventType, encodeTxData } = require('./process')
 
 async function createTx (data, arweave) {
   return arweave.createTransaction({
@@ -33,16 +33,16 @@ async function entryDelete (arweave, entry, id, diff) {
 }
 
 // TODO: rewrite below
-async function listAppend (arweave, entry, listEntry, id, targetId) {
-  const tx = await createTx({ op: 'append', target: targetId }, arweave)
+async function listAppend (arweave, entry, listEntry, id, blockId) {
+  const tx = await createTx(await validateAndEncode({ type: ListEventType.APPEND, blockId }), arweave)
   tx.addTag('block', id)
   tx.addTag('child', String(listEntry.id))
 
   return tx
 }
 
-async function listRemove (arweave, entry, listEntry, id, targetId) {
-  const tx = await createTx({ op: 'delete', target: targetId }, arweave)
+async function listRemove (arweave, entry, listEntry, id, blockId) {
+  const tx = await createTx(await validateAndEncode({ type: ListEventType.DELETE, blockId }), arweave)
   tx.addTag('block', id)
   tx.addTag('child', String(listEntry.id))
 

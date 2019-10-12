@@ -2,6 +2,8 @@
 
 /* eslint-disable guard-for-in */
 
+// TODO: attempt compression using $algo and use multiprefix, then uses that if smaller in total
+
 const Joi = require('@hapi/joi')
 
 const x = require('base-x')

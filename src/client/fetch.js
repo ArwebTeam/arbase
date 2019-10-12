@@ -213,6 +213,13 @@ module.exports = (arweave, entries) => {
     // TODO: tags should be processed in the same way as attributes, just instead their "tags" named and no modify perms
     // TODO: lists are trash now
     // TODO: acls would need a "what is our previous element" reference helper, to say that for ex "p" is previous element tag and then read that
+    // TODO: flatened ACLs (isHirarchy$rootId, hirarchyPosition=$actualId)
+    // board $id -> topic $id
+    // board acl=isHirarchy$board
+    // topic acl=isHirarchy$board, isHirarchy$board
+    // tree is determined by ACL parent resolution
+    // TODO: should we instead enforce parent as a tag and make it a tree?!
+    // acl resolution would ask for topic acl using isHirarchy$root and then filter out valid board acl after parsing all using hirarchy=$topicId
 
     query: async function query (query, _qconf) {
       query = typeof query === 'string' ? parser(query, _qconf) : query

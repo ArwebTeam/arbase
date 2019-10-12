@@ -62,18 +62,22 @@ function joinListOplog (data, idMap, tx) {
   }
 }
 
-function lexer (query) {
-
+const typeRE = /(@([a-z0-9]+)\/)([a-z0-9]+)?/i
+function parseType (str) {
+  const [,, ns, name] = str.match(typeRE)
+  return {ns, name}
 }
 
-function parser (query, config) {
+const lexer = require('./lexer')
+
+function parser (query, config = {}, e) {
   const tokens = lexer(query)
 
   let block = 'select'
 
   let i = 0
 
-  const out = {/* tags: {}, */ order: []}
+  const out = { /* tags: {}, */ order: [] }
 
   function expect (type, value) {
     const token = tokens[i]
@@ -95,12 +99,13 @@ function parser (query, config) {
 
   while (tokens[i]) {
     switch (block) {
-      case 'select':
+      case 'select': {
         expect('literal', 'select')
         i++
         block = 'single'
         break
-      case 'single':
+      }
+      case 'single': {
         if (assume('literal', 'single')) {
           // expect('literal', 'single')
           query.single = true
@@ -109,9 +114,11 @@ function parser (query, config) {
           block = 'type'
         }
         break
+      }
       case 'type': {
         expect('literal')
-        query.type = tokens[i].value
+        query.type = parseType(tokens[i].value)
+        query.typeObj = e.entry[query.type.ns][query.type.name]
         block = 'where'
         i++
         break
@@ -137,7 +144,7 @@ function parser (query, config) {
         // TODO v0: just arlang query
 
         // query is string
-        out.query = $arql(tokens[i].value, {lang: config.arqlLang || 'sym', params: config.params})
+        out.arql = $arql(tokens[i].value, {lang: config.arqlLang || 'sym', params: config.params})
         break
       }
       case 'where2Inner': {
@@ -202,7 +209,7 @@ function parser (query, config) {
   like: (val, comp) => null // TODO: check for strings via substr, for numbers via compare
 } */
 
-module.exports = (arweave, entries) => {
+module.exports = (arweave, e) => {
   async function fetchTransaction (id) {
     const tx = await arweave.transactions.get(id)
 
@@ -244,12 +251,13 @@ module.exports = (arweave, entries) => {
     // acl resolution would ask for topic acl using isHirarchy$root and then filter out valid board acl after parsing all using hirarchy=$topicId
 
     query: async function query (query, _qconf) {
-      query = typeof query === 'string' ? parser(query, _qconf) : query
-      const entry = entries[query.type]
+      query = typeof query === 'string' ? parser(query, _qconf, e) : query
+
+      const {typeObj: entry} = query
 
       const el = {}
 
-      const {data: txs, live} = await arweave.query(query)
+      const {data: txs, live} = await arweave.query(query.arql)
 
       for (let i = txs.length; i > -1; i--) {
         const {data, tags, time, owner, id} = await fetchTransaction(txs[i])

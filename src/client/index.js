@@ -1,8 +1,8 @@
 'use strict'
 
-module.exports = (arweave, entries) => {
+module.exports = (arweave, e) => {
   return {
-    read: require('./fetch')(arweave, entries),
-    write: require('./update')(arweave, entries)
+    read: require('./fetch')(arweave, e),
+    write: require('./update')(arweave, e)
   }
 }

@@ -53,7 +53,7 @@ async function entryDelete (arweave, entry, rid, tags) {
   return tx
 }
 
-module.exports = (arweave, entries) => {
+module.exports = (arweave, e) => {
   const out = {
     entryCreate,
     entryModify,

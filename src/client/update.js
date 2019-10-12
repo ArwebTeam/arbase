@@ -13,7 +13,7 @@ async function createTx (data, arweave) {
 
 // TODO: do some verification before creating the TX
 
-async function entryCreate (arweave, entry, val, tags) {
+async function entryCreate (arweave, entry, tags, val) {
   const tx = await createTx(await validateAndEncode(entry, val), arweave)
   const rid = getRandomID()
 
@@ -27,7 +27,7 @@ async function entryCreate (arweave, entry, val, tags) {
   return tx
 }
 
-async function entryModify (arweave, entry, rid, diff, tags) {
+async function entryModify (arweave, entry, rid, tags, diff) {
   const tx = await createTx(await validateAndEncode(entry, diff, true), arweave)
 
   for (const tag in tags) { // eslint-disable-line guard-for-in
@@ -53,7 +53,7 @@ async function entryDelete (arweave, entry, rid, tags) {
   return tx
 }
 
-module.exports = (arweave) => {
+module.exports = (arweave, entries) => {
   const out = {
     entryCreate,
     entryModify,

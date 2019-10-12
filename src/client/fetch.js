@@ -128,13 +128,8 @@ module.exports = (arweave) => {
 
       queue.init(id, 3, 50)
 
-      const txLog = txs.reverse().map(() => queue(id, async () => {
-        const fetched = await fetchTransaction(id)
-        return validateEntry(entry, fetched, false)
-      }))
-
-      for (let i = txLog.length; i > -1; i--) {
-        const tx = await txLog[i]
+      for (let i = txs.length; i > -1; i--) {
+        const tx = await txs[i]
         if (tx) {
           const data = await fetchTransaction(tx)
           obj = joinOplog(obj, await decodeAndValidate(entry, data, true))

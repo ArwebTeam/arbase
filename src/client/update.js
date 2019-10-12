@@ -1,6 +1,9 @@
 'use strict'
 
-const { validateAndEncode, validateAndEncodeList, ListEventType, encodeTxData } = require('./process')
+const crypto = require('crypto')
+const getRandomID = () => crypto.randomBytes(16).toString('hex')
+
+const { validateAndEncode, encodeTxData } = require('./process')
 
 async function createTx (data, arweave) {
   return arweave.createTransaction({
@@ -10,41 +13,42 @@ async function createTx (data, arweave) {
 
 // TODO: do some verification before creating the TX
 
-async function entryCreate (arweave, entry, val) {
+async function entryCreate (arweave, entry, val, tags) {
   const tx = await createTx(await validateAndEncode(entry, val), arweave)
+  const rid = getRandomID()
+
+  for (const tag in tags) { // eslint-disable-line guard-for-in
+    tx.addTag(tag, tags[tag])
+  }
+
+  tx.addTag('i', rid)
+  tx.addTag('a', 'c')
 
   return tx
 }
 
-async function entryModify (arweave, entry, id, diff) {
+async function entryModify (arweave, entry, rid, diff, tags) {
   const tx = await createTx(await validateAndEncode(entry, diff, true), arweave)
-  tx.addTag('block', id)
-  tx.addTag('child', '#')
+
+  for (const tag in tags) { // eslint-disable-line guard-for-in
+    tx.addTag(tag, tags[tag])
+  }
+
+  tx.addTag('i', rid)
+  tx.addTag('a', 'e')
 
   return tx
 }
 
-async function entryDelete (arweave, entry, id, diff) {
-  const tx = await createTx(/* TODO */ '', arweave)
-  tx.addTag('block', id)
-  tx.addTag('child', '#')
+async function entryDelete (arweave, entry, rid, tags) {
+  const tx = await createTx(Buffer.from(''), arweave)
 
-  return tx
-}
+  for (const tag in tags) { // eslint-disable-line guard-for-in
+    tx.addTag(tag, tags[tag])
+  }
 
-// TODO: rewrite below
-async function listAppend (arweave, entry, listEntry, id, blockId) {
-  const tx = await createTx(await validateAndEncode({ type: ListEventType.APPEND, blockId }), arweave)
-  tx.addTag('block', id)
-  tx.addTag('child', String(listEntry.id))
-
-  return tx
-}
-
-async function listRemove (arweave, entry, listEntry, id, blockId) {
-  const tx = await createTx(await validateAndEncode({ type: ListEventType.DELETE, blockId }), arweave)
-  tx.addTag('block', id)
-  tx.addTag('child', String(listEntry.id))
+  tx.addTag('i', rid)
+  tx.addTag('a', 'd')
 
   return tx
 }
@@ -53,9 +57,7 @@ module.exports = (arweave) => {
   const out = {
     entryCreate,
     entryModify,
-    entryDelete,
-    listAppend,
-    listRemove
+    entryDelete
   }
 
   for (const fnc in out) { // eslint-disable-line guard-for-in

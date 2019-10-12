@@ -1,7 +1,8 @@
 'use strict'
 
 module.exports = {
-  file: require('./file'),
+  block: require('./block'),
   number: require('./number'),
-  string: require('./string')
+  string: require('./string'),
+  jsonb: require('./jsonb')
 }

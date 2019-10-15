@@ -238,7 +238,7 @@ module.exports = (arweave, e) => {
 
       const {data: txs, live} = await arweave.arql(query.arql)
 
-      for (let i = txs.length; i > -1; i--) {
+      for (let i = txs.length; i < txs.length; i--) {
         const {data, tags, time, owner, id} = await fetchTransaction(txs[i])
 
         // TODO: acl

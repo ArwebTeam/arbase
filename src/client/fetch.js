@@ -37,7 +37,7 @@ function parseType (str) {
   return {ns, name}
 }
 
-const lexer = require('./lexer')
+const lexer = require('arlang/src/lexer')
 
 function parser (query, config = {}, e) {
   const tokens = lexer(query)
@@ -112,7 +112,8 @@ function parser (query, config = {}, e) {
         // TODO v0: just arlang query
 
         // query is string
-        query.arql = $arql(tokens[i].value, {lang: config.arqlLang || 'sym', params: config.params})
+        query.arql = arlang(tokens[i].value, {lang: config.arqlLang || 'sym', params: config.params})
+        i++
         break
       }
       case 'where2Inner': {
@@ -166,6 +167,8 @@ function parser (query, config = {}, e) {
       }
     }
   }
+
+  return query
 }
 
 /* const OPs = {
@@ -233,7 +236,7 @@ module.exports = (arweave, e) => {
 
       const el = {}
 
-      const {data: txs, live} = await arweave.query(query.arql)
+      const {data: txs, live} = await arweave.arql(query.arql)
 
       for (let i = txs.length; i > -1; i--) {
         const {data, tags, time, owner, id} = await fetchTransaction(txs[i])

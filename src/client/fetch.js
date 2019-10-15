@@ -31,7 +31,7 @@ function joinOplog (state, delta) {
   return state
 }
 
-const typeRE = /(@([a-z0-9]+)\/)([a-z0-9]+)?/i
+const typeRE = /(@([a-z0-9]+)\/)?([a-z0-9]+)/i
 function parseType (str) {
   const [,, ns, name] = str.match(typeRE)
   return {ns, name}
@@ -46,7 +46,7 @@ function parser (query, config = {}, e) {
 
   let i = 0
 
-  const out = { /* tags: {}, */ order: [] }
+  query = { /* tags: {}, */ order: [] }
 
   function expect (type, value) {
     const token = tokens[i]
@@ -76,18 +76,17 @@ function parser (query, config = {}, e) {
       }
       case 'single': {
         if (assume('literal', 'single')) {
-          // expect('literal', 'single')
           query.single = true
           i++
-        } else {
-          block = 'type'
         }
+
+        block = 'type'
         break
       }
       case 'type': {
         expect('literal')
         query.type = parseType(tokens[i].value)
-        query.typeObj = e.entry[query.type.ns][query.type.name]
+        query.typeObj = e.entry[query.type.ns || null][query.type.name]
         block = 'where'
         i++
         break
@@ -113,7 +112,7 @@ function parser (query, config = {}, e) {
         // TODO v0: just arlang query
 
         // query is string
-        out.arql = $arql(tokens[i].value, {lang: config.arqlLang || 'sym', params: config.params})
+        query.arql = $arql(tokens[i].value, {lang: config.arqlLang || 'sym', params: config.params})
         break
       }
       case 'where2Inner': {
@@ -155,7 +154,7 @@ function parser (query, config = {}, e) {
         const type = tokens[i].value
         i++
 
-        out.order.push([key, type])
+        query.order.push([key, type])
         break
       }
       case 'eof': {

@@ -41,7 +41,7 @@ async function entryModify (arweave, entry, rid, tags, diff) {
 }
 
 async function entryDelete (arweave, entry, rid, tags) {
-  const tx = await createTx(Buffer.from(''), arweave)
+  const tx = await createTx(Buffer.from(''), arweave) // TODO: add contents
 
   for (const tag in tags) { // eslint-disable-line guard-for-in
     tx.addTag(tag, tags[tag])

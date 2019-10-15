@@ -4,7 +4,7 @@ const arlang = require('arlang')
 const $arql = arlang.short('sym')
 const Boom = require('@hapi/boom')
 
-const { decodeAndValidate, decodeAndValidateList, ListEventType, decodeTxData } = require('./process')
+const { decodeAndValidate, decodeTxData } = require('./process')
 
 const queue = require('../queue')()
 
@@ -29,37 +29,6 @@ function joinOplog (state, delta) {
   }
 
   return state
-}
-
-function validateListEntry (entry, listEntry, {data, tags}) {
-  // TODO: return false if invalid
-
-  return {data, tags}
-}
-
-function joinListOplog (data, idMap, tx) {
-  // TODO: add
-
-  /*
-
-  op is either append or delete
-  target is a blockId
-
-  */
-
-  switch (data.type) {
-    case ListEventType.APPEND: {
-      idMap[data.target] = data.push(data.target)
-      break
-    }
-    case ListEventType.DELETE: {
-      delete data[idMap[data.target]]
-      break
-    }
-    default: {
-      throw new TypeError(data.op)
-    }
-  }
 }
 
 const typeRE = /(@([a-z0-9]+)\/)([a-z0-9]+)?/i
@@ -221,6 +190,8 @@ module.exports = (arweave, e) => {
       tags[key] = value
     })
 
+    const time = 0 // TODO: fix this because time blargh
+
     return {
       data: decodeTxData(tx),
       tags,
@@ -241,14 +212,20 @@ module.exports = (arweave, e) => {
     // TODO: tags should be processed in the same way as attributes, just instead their "tags" named and no modify perms
     // TODO: lists are trash now
     // TODO: acls would need a "what is our previous element" reference helper, to say that for ex "p" is previous element tag and then read that
-    // TODO: flatened ACLs (isHirarchy$rootId, hirarchyPosition=$actualId)
+
     // TODO: make one where query, but seperate tags into arql and data into where2
+
+    // TODO: flatened ACLs (isHirarchy$rootId, hirarchyPosition=$actualId)
     // board $id -> topic $id
     // board acl=isHirarchy$board
     // topic acl=isHirarchy$board, isHirarchy$board
     // tree is determined by ACL parent resolution
-    // TODO: should we instead enforce parent as a tag and make it a tree?!
     // acl resolution would ask for topic acl using isHirarchy$root and then filter out valid board acl after parsing all using hirarchy=$topicId
+
+    // aclv2:
+    // or(equals(h, $board), equals(h, $topic), equals(h, $subtopic)) - this would give us ACLs for the entire hirarchy, now just need efficient way to fetch hirarchy
+
+    // TODO: should we instead enforce parent as a tag and make it a tree?!
 
     query: async function query (query, _qconf) {
       query = typeof query === 'string' ? parser(query, _qconf, e) : query

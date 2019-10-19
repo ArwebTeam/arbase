@@ -1,6 +1,7 @@
 'use strict'
 
 const crypto = require('crypto')
+// TODO: use hex id, store binary
 const getRandomID = () => crypto.randomBytes(16).toString('hex')
 
 const { validateAndEncode, encodeTxData } = require('./process')

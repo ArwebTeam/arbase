@@ -1,6 +1,6 @@
 {
   "name": "arbase",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Arbase is a tool to create object-based APIs on top of arweave in mere minutes",
   "main": "src/index.js",
   "bin": {

@@ -29,7 +29,8 @@
     "@hapi/boom": "^8.0.1",
     "@hapi/joi": "^16.1.7",
     "arlang": "^0.1.4",
-    "arweave": "^1.4.1",
+    "arql-ops": "^1.0.0",
+    "arweave": "^1.5.3",
     "base-x": "^3.0.7",
     "protons": "^1.0.1"
   }
